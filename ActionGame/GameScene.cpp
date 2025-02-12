@@ -11,6 +11,7 @@ std::chrono::high_resolution_clock::time_point start;
 GameScene::GameScene(int maxhp) {
 	sound.Init();
 	//sound.Play(SOUND_LABEL_BGM001);
+
 	// テクスチャマネージャーを生成　オブジェクトに登録
 	textureManager = new TextureManager(g_pDevice);
 	Object::SetTextureManager(textureManager);
@@ -22,24 +23,31 @@ GameScene::GameScene(int maxhp) {
 	player->SetSize(50.0f, 50.0f, 0.0f);
 	player->SetHeight(50.0f);
 	player->SetWidth(30.0f);
-	
+
 	// ブロックの生成
 	for (int i = 0; i < 1; i++) {
-		block.emplace_back(std::make_unique<Block>());
-		block.back()->Init(L"asset/Block.png");
-		block.back()->SetPos((i * 30.0f) - 30.0f, -200.0f, 0.0f);
-		block.back()->SetSize(30.0f, 30.0f, 0.0f);
+		auto block = std::make_unique<Block>();
+		block->Init(L"asset/Block.png");
+		block->SetPos((i * 30.0f) - 30.0f, -200.0f, 0.0f);
+		block->SetSize(30.0f, 30.0f, 0.0f);
+
+		blockPtrs.push_back(block.get());  // MapObject* のリストに追加
+		blocks.emplace_back(std::move(block));  // unique_ptr をリストに追加
 	}
 
 	for (int i = 0; i < 20; i++) {
-		floor.emplace_back(std::make_unique<Floor>());
-		floor.back()->Init(L"asset/Block.png");
-		floor.back()->SetPos((i * 30.0f) - 300.0f, -300.0f, 0.0f);
-		floor.back()->SetSize(30.0f, 30.0f, 0.0f);
+		auto floorBlock = std::make_unique<Floor>();
+		floorBlock->Init(L"asset/Block.png");
+		floorBlock->SetPos((i * 30.0f) - 300.0f, -300.0f, 0.0f);
+		floorBlock->SetSize(30.0f, 30.0f, 0.0f);
+
+		blockPtrs.push_back(floorBlock.get());  // MapObject* のリストに追加
+		blocks.emplace_back(std::move(floorBlock));  // unique_ptr をリストに追加
 	}
 
 	entities.emplace_back(player);
 }
+
 GameScene::~GameScene() {
 	// プレイヤーの解放
 	delete player;
@@ -52,29 +60,32 @@ void GameScene::Update() {
 	float deltaTime = time.GetDeltaTime();
 	input.Update();
 	// ====================プレイヤーの更新====================
-	player->Update(input,deltaTime);
+	player->Update(input, deltaTime, blockPtrs);
 
-	for (auto& obj : floor) {
-		obj->Update(entities);
-	}
 	// ====================ブロックの更新====================
-	for (auto it = block.begin(); it != block.end();) {
-		(*it)->Update(entities);
-
-		// ブロックと接触
-		if ((*it)->CheckCollision(player)) {
-			// ブロック破壊 & 破片生成
-			(*it)->Destroy(fragmentList);
-		}
-		// blockの破壊フラグ立っているものを消す
+	for (auto it = blocks.begin(); it != blocks.end();) {
+		// dynamic_cast で Block 型にキャスト
 		Block* blo = dynamic_cast<Block*>(it->get());
-		if (blo->GetFlg()) {
-			it = block.erase(it);
+		if (blo) {
+			// ブロックと接触
+			if (blo->CheckCollision(player)) {
+				// ブロック破壊 & 破片生成
+				blo->Destroy(fragmentList);
+			}
+
+			// 破壊フラグが立っていたら削除
+			if (blo->GetFlg()) {
+				it = blocks.erase(it);  // erase() の戻り値を it に代入
+			}
+			else {
+				++it;
+			}
 		}
 		else {
-			++it;
+			++it;  // dynamic_cast に失敗した場合はスキップ
 		}
 	}
+
 
 	// ====================破片の更新====================
 	for (auto it = fragmentList.begin(); it != fragmentList.end(); ) {
@@ -95,10 +106,7 @@ void GameScene::Update() {
 
 void GameScene::Draw() {
 	player->Draw();
-	for (const auto& obj : floor) {
-		obj->Draw();
-	}
-	for (const auto& obj : block) {
+	for (const auto& obj : blocks) {
 		obj->Draw();
 	}
 	for (const auto& obj : fragmentList) {

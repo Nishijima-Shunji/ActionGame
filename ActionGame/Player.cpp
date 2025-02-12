@@ -1,4 +1,5 @@
 #include "Player.h"
+#include <iostream>
 
 // ステータスの初期設定
 Player::Player(int maxhp) {
@@ -21,8 +22,9 @@ Player::Player(int maxhp) {
 	deadFlg = false;
 }
 
-void Player::Update(Input input, float deltatime) {
+void Player::Update(Input input, float deltatime, const std::vector<MapObject*>& blocks) {
 	prevPos = pos;
+	CheckHitBlock(blocks);
 	move(input, deltatime);    //移動
 	if (health <= 0) {
 		deadFlg = true;
@@ -46,7 +48,7 @@ void Player::move(Input input, float deltaTime) {
 	}
 
 	if (input.GetKeyTrigger(VK_SPACE) && OnGround) {
-		velocity.y += 20.0f;
+		velocity.y += jumpSpeed;
 		OnGround = false;
 	}
 	if (OnGround) {
@@ -70,6 +72,8 @@ void Player::move(Input input, float deltaTime) {
 	else if (pos.y > MAP_HEIGHT / 2 || pos.y < -(MAP_HEIGHT / 2)) {
 		pos.y = oldPos.y;
 	}
+
+	std::cout << OnGround;
 }
 
 float Player::GetRadius() const {
@@ -90,4 +94,15 @@ int Player::GetHealth() const {
 
 void Player::SetVelocity(DirectX::SimpleMath::Vector3 velo) {
 	velocity = velo;
+}
+
+void Player::CheckHitBlock(const std::vector<MapObject*>& blocks) {
+	SetOnGround(false); // 毎フレーム初めにリセット
+
+	for (MapObject* block : blocks) {
+		if (block->CheckCollision(this)) {
+			block->ResolveCollision(this);
+			SetOnGround(true); // 1つでも接触していればtrueにする
+		}
+	}
 }

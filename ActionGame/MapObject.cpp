@@ -50,6 +50,58 @@ bool MapObject::CheckCollision(Entity* target) {
 	}
 
 	return false; // 重なっていない
+}	
+
+void MapObject::ResolveCollision(Entity* target) {
+	DirectX::SimpleMath::Vector3 targetPos = target->GetPos();
+	DirectX::SimpleMath::Vector3 targetSize = target->GetSize();
+	DirectX::SimpleMath::Vector3 blockPos = GetPos();
+	DirectX::SimpleMath::Vector3 blockSize = GetSize();
+
+	float leftA = blockPos.x - blockSize.x * 0.5f;
+	float rightA = blockPos.x + blockSize.x * 0.5f;
+	float topA = blockPos.y + blockSize.y * 0.5f;
+	float bottomA = blockPos.y - blockSize.y * 0.5f;
+
+	float leftB = targetPos.x - targetSize.x * 0.5f;
+	float rightB = targetPos.x + targetSize.x * 0.5f;
+	float topB = targetPos.y + targetSize.y * 0.5f;
+	float bottomB = targetPos.y - targetSize.y * 0.5f;
+
+	// X方向の調整
+	if (rightA > leftB && leftA < rightB) {
+		if (targetPos.x < leftA) {
+			target->SetPos(DirectX::SimpleMath::Vector3(target->GetPrevPos().x, targetPos.y, 0.0f));
+		}
+		else if (targetPos.x > rightA) {
+			target->SetPos(DirectX::SimpleMath::Vector3(target->GetPrevPos().x, targetPos.y, 0.0f));
+		}
+	}
+
+	//// Y方向の調整
+	//if (bottomA < topB && topA > bottomB) {
+	//	if (targetPos.y > topA) {
+	//		//target->SetPos(DirectX::SimpleMath::Vector3(targetPos.x, blockPos.y + blockSize.y * 0.5f, 0.0f));
+	//		target->SetPos(DirectX::SimpleMath::Vector3(targetPos.x, target->GetPrevPos().y, 0.0f));
+	//	}
+	//	else if (targetPos.y < bottomA) {
+	//		target->SetPos(DirectX::SimpleMath::Vector3(targetPos.x, target->GetPrevPos().y, 0.0f));
+	//	}
+	//}
+	if (bottomA < topB && topA > bottomB) {
+    float velocityY = target->GetVelocity().y;
+
+    // 上からブロックにめり込んだ場合
+    if (velocityY < 0.0f && targetPos.y > topA) {
+        target->SetPos(DirectX::SimpleMath::Vector3(targetPos.x, topA + targetSize.y * 0.5f, 0.0f));
+        target->SetVelocity(DirectX::SimpleMath::Vector3(target->GetVelocity().x, 0.0f, 0.0f)); // Y速度をリセット
+    }
+    // 下からブロックにめり込んだ場合
+    else if (velocityY > 0.0f && targetPos.y < bottomA) {
+        target->SetPos(DirectX::SimpleMath::Vector3(targetPos.x, bottomA - targetSize.y * 0.5f, 0.0f));
+        target->SetVelocity(DirectX::SimpleMath::Vector3(target->GetVelocity().x, 0.0f, 0.0f)); // Y速度をリセット
+    }
+}
 }
 
 

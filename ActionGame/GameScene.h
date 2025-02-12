@@ -39,10 +39,10 @@ private:
     int enemyType = 0;
 
     std::vector<Entity*> entities;
+    std::vector<std::unique_ptr<MapObject>> blocks;
+    std::vector<MapObject*> blockPtrs;
 
     //ƒuƒƒbƒNŠÖŒW
-    std::vector<std::unique_ptr<Floor>> floor;
-    std::vector<std::unique_ptr<Block>> block;
     std::vector<std::unique_ptr<BlockFragment>> fragmentList;
 
 

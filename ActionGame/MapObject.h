@@ -16,5 +16,7 @@ public:
 
 	bool CheckCollisionForDestruction(Entity* target);
 	bool CheckCollision(Entity* target);
+
+	void ResolveCollision(Entity* target);
 };
 
