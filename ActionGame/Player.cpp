@@ -72,8 +72,6 @@ void Player::move(Input input, float deltaTime) {
 	else if (pos.y > MAP_HEIGHT / 2 || pos.y < -(MAP_HEIGHT / 2)) {
 		pos.y = oldPos.y;
 	}
-
-	std::cout << OnGround;
 }
 
 float Player::GetRadius() const {

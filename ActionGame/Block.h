@@ -7,6 +7,7 @@ class Block : public MapObject
 private:
 	bool deadFlg = false;
 public:
+	Block();
 	void Update(const std::vector<Entity*>& entities);
 	void Destroy(std::vector<std::unique_ptr<BlockFragment>>& fragmentList);
 

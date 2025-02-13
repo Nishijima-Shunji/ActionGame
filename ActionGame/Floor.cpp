@@ -1,5 +1,11 @@
 #include "Floor.h"
 
+Floor::Floor() {
+    // ‰ŠúƒTƒCƒY‚Ìİ’è
+    Width = size.x * 0.5f;
+    Height = size.y * 0.5f;
+}
+
 void Floor::Update(const std::vector<Entity*>& entities) {
     for (Entity* target : entities) {
         if (CheckCollision(target)) {

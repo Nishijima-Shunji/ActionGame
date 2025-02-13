@@ -133,6 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BaseScene.cpp" />
+    <ClCompile Include="Blade.cpp" />
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="BlockFragment.cpp" />
     <ClCompile Include="direct3d.cpp" />
@@ -156,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseScene.h" />
+    <ClInclude Include="Blade.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="BlockFragment.h" />
     <ClInclude Include="direct3d.h" />
@@ -166,6 +168,7 @@
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="MapObject.h" />
+    <ClInclude Include="OBBHit.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="ResultScene.h" />

@@ -24,6 +24,12 @@ GameScene::GameScene(int maxhp) {
 	player->SetHeight(50.0f);
 	player->SetWidth(30.0f);
 
+	blade = new Blade;
+	blade->Init(L"asset/Block.png");
+	blade->SetPos(player->GetPos().x, player->GetPos().y, 0.0f);
+	blade->SetSize(30.0f, 30.0f, 0.0f);
+
+
 	// ブロックの生成
 	for (int i = 0; i < 1; i++) {
 		auto block = std::make_unique<Block>();
@@ -61,30 +67,12 @@ void GameScene::Update() {
 	input.Update();
 	// ====================プレイヤーの更新====================
 	player->Update(input, deltaTime, blockPtrs);
+	for (auto& fragment : fragmentList) {
+		fragmentPtrs.push_back(fragment.get()); // ポインタを取得
+	}
+	blade->Update(entities,blocks,fragmentList);
 
 	// ====================ブロックの更新====================
-	for (auto it = blocks.begin(); it != blocks.end();) {
-		// dynamic_cast で Block 型にキャスト
-		Block* blo = dynamic_cast<Block*>(it->get());
-		if (blo) {
-			// ブロックと接触
-			if (blo->CheckCollision(player)) {
-				// ブロック破壊 & 破片生成
-				blo->Destroy(fragmentList);
-			}
-
-			// 破壊フラグが立っていたら削除
-			if (blo->GetFlg()) {
-				it = blocks.erase(it);  // erase() の戻り値を it に代入
-			}
-			else {
-				++it;
-			}
-		}
-		else {
-			++it;  // dynamic_cast に失敗した場合はスキップ
-		}
-	}
 
 
 	// ====================破片の更新====================
@@ -105,13 +93,14 @@ void GameScene::Update() {
 
 
 void GameScene::Draw() {
-	player->Draw();
 	for (const auto& obj : blocks) {
 		obj->Draw();
 	}
 	for (const auto& obj : fragmentList) {
 		obj->Draw();
 	}
+	player->Draw();
+	blade->Draw();
 }
 
 void GameScene::SpawnEnemy(int type) {

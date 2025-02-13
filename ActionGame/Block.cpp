@@ -1,5 +1,11 @@
 #include "Block.h"
 
+Block::Block() {
+	// ‰ŠúƒTƒCƒY‚Ìİ’è
+	Width = size.x * 0.5f;
+	Height = size.y * 0.5f;
+}
+
 void Block::Update(const std::vector<Entity*>& entities) {
 	//for (Entity* target : entities) {
 	//	if (CheckCollision(target)) {
@@ -52,7 +58,6 @@ void Block::Update(const std::vector<Entity*>& entities) {
 	//	}
 	//}
 }
-
 
 void Block::Destroy(std::vector<std::unique_ptr<BlockFragment>>& fragmentList) {
 	// ”j•Ğ‚Ì”

@@ -7,6 +7,9 @@
 #include "direct3d.h"
 #include "WICTextureLoader.h"
 #include "TextureManager.h"
+#include "OBBHit.h"
+
+using Vector2 = DirectX::SimpleMath::Vector2;
 
 class Object
 {
@@ -29,6 +32,9 @@ protected:
 	DirectX::XMFLOAT4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	float angle = 0.0f;
 	DirectX::XMFLOAT3 gravity{ 0.0f, -9.8f * 7.0f, 0.0f };
+
+	float Width;
+	float Height;
 
 	// 頂点バッファ
 	ID3D11Buffer* m_pVertexBuffer = nullptr;
@@ -72,6 +78,11 @@ public:
 
 	static void SetTextureManager(TextureManager* manager) {
 		textureManager = manager;
+	}
+
+	std::array<Vector2, 4> GetOBBVertices() const {
+		Vector2 _pos = { pos.x,pos.y };
+		return ComputeOBBVertices(_pos, Width, Height, angle); 
 	}
 };
 

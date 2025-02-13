@@ -93,6 +93,9 @@
     <ClCompile Include="BaseScene.cpp">
       <Filter>Scene\Base</Filter>
     </ClCompile>
+    <ClCompile Include="Blade.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameScene.h">
@@ -154,6 +157,12 @@
     </ClInclude>
     <ClInclude Include="BaseScene.h">
       <Filter>Scene\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Blade.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="OBBHit.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

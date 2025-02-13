@@ -6,6 +6,7 @@ class Floor :
 private:
 
 public:
+    Floor();
     void Update(const std::vector<Entity*>& entities);
 };
 

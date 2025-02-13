@@ -5,6 +5,7 @@
 #include "Timer.h"
 
 #include "Player.h"
+#include "Blade.h"
 #include "Enemy.h"
 #include "Floor.h"
 #include "Block.h"
@@ -24,6 +25,7 @@ private:
     TextureManager* textureManager;     // テクスチャ管理の呼び出し
 
     Player* player;         // プレイヤー
+    Blade* blade;
     Object* bg;             // 背景
     Object* score_bg;       // スコア
     std::vector<std::unique_ptr<Object>> scoreNum;
@@ -44,6 +46,7 @@ private:
 
     //ブロック関係
     std::vector<std::unique_ptr<BlockFragment>> fragmentList;
+    std::vector<BlockFragment*> fragmentPtrs;
 
 
 
@@ -53,6 +56,8 @@ public:
 
     void Update() override;
     void Draw() override;
+
+
 
     void SpawnEnemy(int type);
     void AddEnemy(const std::wstring& baseTexturePath, int enemyType);
