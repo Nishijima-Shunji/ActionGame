@@ -67,12 +67,15 @@ void MapObject::ResolveCollision(Entity* target) {
 	}
 }
 
+// ‰ñ“]‚µ‚Ä‚é‹éŒ`‚Ì“–‚½‚è”»’è
 bool MapObject::CheckOBBHit(const Object* target) {
+	// ‘ÎÛ‚ª•Ç
 	const MapObject* mapTarget = dynamic_cast<const MapObject*>(target);
 	if (mapTarget) {
 		return Collision_OBB_OBB(this->GetOBBVertices(), mapTarget->GetOBBVertices());
 	}
 
+	// ‘ÎÛ‚ª•Ší
 	const Blade* bladeTarget = dynamic_cast<const Blade*>(target);
 	if (bladeTarget) {
 		return Collision_OBB_OBB(this->GetOBBVertices(), bladeTarget->GetOBBVertices());

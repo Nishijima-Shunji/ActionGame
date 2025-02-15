@@ -21,14 +21,15 @@ GameScene::GameScene(int maxhp) {
 	player->Init(L"asset/Player.png");
 	player->SetPos(0.0f, 50.0f, 0.0f);
 	player->SetSize(50.0f, 50.0f, 0.0f);
-	player->SetHeight(50.0f);
 	player->SetWidth(30.0f);
+	player->SetHeight(50.0f);
 
 	blade = new Blade;
 	blade->Init(L"asset/Block.png");
 	blade->SetPos(player->GetPos().x, player->GetPos().y, 0.0f);
-	blade->SetSize(30.0f, 30.0f, 0.0f);
-
+	blade->SetSize(30.0f, 200.0f, 0.0f);
+	blade->SetWidth(30.0f);
+	blade->SetHeight(200.0f);
 
 	// ブロックの生成
 	for (int i = 0; i < 1; i++) {
@@ -73,7 +74,7 @@ void GameScene::Update() {
 	blade->Update(entities,blocks,fragmentList);
 
 	// ====================ブロックの更新====================
-
+	
 
 	// ====================破片の更新====================
 	for (auto it = fragmentList.begin(); it != fragmentList.end(); ) {

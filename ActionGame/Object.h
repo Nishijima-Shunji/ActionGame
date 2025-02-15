@@ -72,6 +72,8 @@ public:
 	virtual void SetSize(float x, float y, float z);	//大きさをセット
 	virtual void SetAngle(float a);						//角度をセット
 	virtual void SetColor(float r, float g, float b, float a);	//色をセット
+	virtual void SetWidth(float _width) { Width = _width; };
+	virtual void SetHeight(float _height) { Height = _height; };
 
 	virtual void SetTexture(TextureManager* textureManager, const wchar_t* imgname);
 	virtual void SetUV(int u, int v);

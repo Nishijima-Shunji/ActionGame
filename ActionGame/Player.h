@@ -15,6 +15,7 @@ private:
 	float radius = 10.0f;   // 当たり判定の半径
 	bool deadFlg = false;	// 死亡しているかどうか
 	bool JumpFlg = false;
+	bool direction = false;
 
 public:
 	Player(int maxhp);  // コンストラクタ
@@ -26,6 +27,7 @@ public:
 	void DecreaseHealth(int);
 	bool GetdeadFlg() const;
 	int GetHealth() const;
+	bool GetDirection() const { return direction; };
 
 	void SetVelocity(DirectX::SimpleMath::Vector3 velo);
 

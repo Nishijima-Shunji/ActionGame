@@ -41,10 +41,12 @@ void Player::move(Input input, float deltaTime) {
 	if (input.GetKeyPress(VK_A)) {
 		velocity.x -= moveSpeed;
 		moveFlg = true;
+		direction = false;
 	}
 	if (input.GetKeyPress(VK_D)) {
 		velocity.x += moveSpeed;
 		moveFlg = true;
+		direction = true;
 	}
 
 	if (input.GetKeyTrigger(VK_SPACE) && OnGround) {
