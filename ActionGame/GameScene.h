@@ -48,8 +48,6 @@ private:
     std::vector<std::unique_ptr<BlockFragment>> fragmentList;
     std::vector<BlockFragment*> fragmentPtrs;
 
-
-
 public:
     GameScene(int maxhp);
     ~GameScene();
@@ -63,6 +61,8 @@ public:
     void AddEnemy(const std::wstring& baseTexturePath, int enemyType);
     void RemoveEnemy(Enemy* enemy);
     void TakeDamege();
+
+    void SpawnBlock(float,float);
 
     void Intro();
     void Outro();

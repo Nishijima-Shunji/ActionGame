@@ -24,7 +24,6 @@ ID3D11ShaderResourceView* TextureManager::GetTexture(const wchar_t* imgname) {
     if (it != textureCache.end()) {
         // キャッシュに存在する場合、参照カウントを増やして返す
         it->second->AddRef();
-        printf("存在するテクスチャ\n");
         return it->second;
     }
 
@@ -38,7 +37,6 @@ ID3D11ShaderResourceView* TextureManager::GetTexture(const wchar_t* imgname) {
 
     // キャッシュに追加
     textureCache[imgPath] = textureView;
-    printf("新しく登録\n");
     return textureView;
 }
 

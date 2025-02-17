@@ -3,7 +3,7 @@
 #include <d3d11.h>  // DirectX11を使うためのヘッダーファイル
 #include <DirectXMath.h> //DirectXの数学関連のヘッダーファイル
 
-#define SCREEN_WIDTH (560)	// ウインドウの幅
+#define SCREEN_WIDTH (1080)	// ウインドウの幅
 #define SCREEN_HEIGHT (720)	// ウインドウの高さ
 
 // 関数のプロトタイプ宣言
@@ -11,6 +11,12 @@ HRESULT D3D_Create(HWND hwnd);
 void    D3D_Release();
 void    D3D_StartRender();
 void    D3D_FinishRender();
+
+// 頂点シェーダーオブジェクトを生成、同時に頂点レイアウトも生成
+HRESULT CreateVertexShader(ID3D11Device* device, const char* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel,
+	D3D11_INPUT_ELEMENT_DESC* layout, unsigned int numElements, ID3D11VertexShader** ppVertexShader, ID3D11InputLayout** ppVertexLayout);
+// ピクセルシェーダーオブジェクトを生成
+HRESULT CreatePixelShader(ID3D11Device* device, const char* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3D11PixelShader** ppPixelShader);
 
 // 構造体の定義
 // 頂点データを表す構造体

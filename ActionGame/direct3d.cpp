@@ -11,11 +11,7 @@
 
 
 //プロトタイプ宣言
-// 頂点シェーダーオブジェクトを生成、同時に頂点レイアウトも生成
-HRESULT CreateVertexShader(ID3D11Device* device, const char* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel,
-	D3D11_INPUT_ELEMENT_DESC* layout, unsigned int numElements, ID3D11VertexShader** ppVertexShader, ID3D11InputLayout** ppVertexLayout);
-// ピクセルシェーダーオブジェクトを生成
-HRESULT CreatePixelShader(ID3D11Device* device, const char* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3D11PixelShader** ppPixelShader);
+
 
 
 
@@ -352,70 +348,67 @@ HRESULT CompileShader(const char* szFileName, LPCSTR szEntryPoint, LPCSTR szShad
 //--------------------------------------------------------------------------------------
 // 頂点シェーダーオブジェクトを生成する
 //--------------------------------------------------------------------------------------
+// 頂点シェーダーオブジェクトを生成、同時に頂点レイアウトも生成
 HRESULT CreateVertexShader(ID3D11Device* device, const char* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel,
 	D3D11_INPUT_ELEMENT_DESC* layout, unsigned int numElements, ID3D11VertexShader** ppVertexShader, ID3D11InputLayout** ppVertexLayout)
 {
-	HRESULT   hr;
-	ID3DBlob* pBlob = nullptr;
-	void* ShaderObject;
-	size_t	  ShaderObjectSize;
+	HRESULT hr = S_OK;
 
-	// ファイルの拡張子に合わせてコンパイル
-	hr = CompileShader(szFileName, szEntryPoint, szShaderModel, &ShaderObject, ShaderObjectSize, &pBlob);
+	// シェーダーのバイトコードを格納するためのバッファ
+	ID3DBlob* pShaderBlob = nullptr;
+	ID3DBlob* pErrorBlob = nullptr;
+
+	// HLSLシェーダーコードのコンパイル
+	hr = D3DCompileFromFile(LPCWSTR(szFileName), nullptr, nullptr, szEntryPoint, szShaderModel, 0, 0, &pShaderBlob, &pErrorBlob);
 	if (FAILED(hr))
 	{
-		if (pBlob)pBlob->Release();
-		return E_FAIL;
+		if (pErrorBlob)
+		{
+			OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
+			pErrorBlob->Release();
+		}
+		return hr;
 	}
 
-	// 頂点シェーダーを生成
-	hr = device->CreateVertexShader(ShaderObject, ShaderObjectSize, NULL, ppVertexShader);
+	// 頂点シェーダーの作成
+	hr = device->CreateVertexShader(pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, ppVertexShader);
 	if (FAILED(hr))
 	{
-		if (pBlob)pBlob->Release();
-		return E_FAIL;
+		pShaderBlob->Release();
+		return hr;
 	}
 
-	// 頂点データ定義生成
-	hr = device->CreateInputLayout(
-		layout,
-		numElements,
-		ShaderObject,
-		ShaderObjectSize,
-		ppVertexLayout);
-	if (FAILED(hr)) {
-		MessageBoxA(NULL, "CreateInputLayout error", "error", MB_OK);
-		pBlob->Release();
-		return E_FAIL;
-	}
+	// 入力レイアウトの作成
+	hr = device->CreateInputLayout(layout, numElements, pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), ppVertexLayout);
+	pShaderBlob->Release(); // バッファを解放
 
-	return S_OK;
+	return hr;
 }
 
-//--------------------------------------------------------------------------------------
-// ピクセルシェーダーオブジェクトを生成する
-//--------------------------------------------------------------------------------------
+// ピクセルシェーダーオブジェクトを生成
 HRESULT CreatePixelShader(ID3D11Device* device, const char* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3D11PixelShader** ppPixelShader)
 {
-	HRESULT   hr;
-	ID3DBlob* pBlob = nullptr;
-	void* ShaderObject;
-	size_t	  ShaderObjectSize;
+	HRESULT hr = S_OK;
 
-	// ファイルの拡張子に合わせてコンパイル
-	hr = CompileShader(szFileName, szEntryPoint, szShaderModel, &ShaderObject, ShaderObjectSize, &pBlob);
+	// シェーダーのバイトコードを格納するためのバッファ
+	ID3DBlob* pShaderBlob = nullptr;
+	ID3DBlob* pErrorBlob = nullptr;
+
+	// HLSLシェーダーコードのコンパイル
+	hr = D3DCompileFromFile(LPCWSTR(szFileName), nullptr, nullptr, szEntryPoint, szShaderModel, 0, 0, &pShaderBlob, &pErrorBlob);
 	if (FAILED(hr))
 	{
-		return E_FAIL;
+		if (pErrorBlob)
+		{
+			OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
+			pErrorBlob->Release();
+		}
+		return hr;
 	}
 
-	// ピクセルシェーダーを生成
-	hr = device->CreatePixelShader(ShaderObject, ShaderObjectSize, NULL, ppPixelShader);
-	if (FAILED(hr))
-	{
-		if (pBlob)pBlob->Release();
-		return E_FAIL;
-	}
+	// ピクセルシェーダーの作成
+	hr = device->CreatePixelShader(pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, ppPixelShader);
+	pShaderBlob->Release(); // バッファを解放
 
-	return S_OK;
+	return hr;
 }

@@ -3,19 +3,8 @@
 
 // ステータスの初期設定
 Player::Player(int maxhp) {
-	// 1/100の確率でキャラ滑る
-	if ((rand() % 1000) == 0)
-	{
-		movementType = 1;
-	}
-
 	// プレイヤーの移動速度
-	if (movementType == 0) {
-		moveSpeed = 3.0f;
-	}
-	else if (movementType == 1) {
-		moveSpeed = 0.1f;
-	}
+	moveSpeed = 3.0f;
 
 	// プレイヤーのHP
 	health = maxhp;
@@ -38,15 +27,18 @@ void Player::move(Input input, float deltaTime) {
 
 	// キャラクター移動
 	velocity.x = 0.0f;
-	if (input.GetKeyPress(VK_A)) {
+	if (input.GetKeyPress(VK_A) && HitState != 2) {
 		velocity.x -= moveSpeed;
 		moveFlg = true;
 		direction = false;
 	}
-	if (input.GetKeyPress(VK_D)) {
+	if (input.GetKeyPress(VK_D) && HitState != 1) {
 		velocity.x += moveSpeed;
 		moveFlg = true;
 		direction = true;
+	}
+	if (input.GetKeyPress(VK_R)) {
+		pos = { 0.0f, -300.0f, 0.0f };
 	}
 
 	if (input.GetKeyTrigger(VK_SPACE) && OnGround) {
@@ -71,29 +63,9 @@ void Player::move(Input input, float deltaTime) {
 	if (pos.x > MAP_WIDTH / 2 || pos.x < -(MAP_WIDTH / 2)) {
 		pos.x = oldPos.x;
 	}
-	else if (pos.y > MAP_HEIGHT / 2 || pos.y < -(MAP_HEIGHT / 2)) {
+	else if (pos.y < -(MAP_HEIGHT / 2)) {
 		pos.y = oldPos.y;
 	}
-}
-
-float Player::GetRadius() const {
-	return radius;
-}
-
-void Player::DecreaseHealth(int damage) {
-	health -= damage;
-}
-
-bool Player::GetdeadFlg() const {
-	return deadFlg;
-}
-
-int Player::GetHealth() const {
-	return health;
-}
-
-void Player::SetVelocity(DirectX::SimpleMath::Vector3 velo) {
-	velocity = velo;
 }
 
 void Player::CheckHitBlock(const std::vector<MapObject*>& blocks) {

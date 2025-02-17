@@ -136,6 +136,7 @@
     <ClCompile Include="Blade.cpp" />
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="BlockFragment.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="direct3d.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Entity.cpp" />
@@ -153,6 +154,7 @@
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TitleScene.cpp" />
+    <ClCompile Include="wave.cpp" />
     <ClCompile Include="WICTextureLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +162,7 @@
     <ClInclude Include="Blade.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="BlockFragment.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="direct3d.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Entity.h" />
@@ -177,6 +180,7 @@
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TitleScene.h" />
+    <ClInclude Include="wave.h" />
     <ClInclude Include="WICTextureLoader.h" />
   </ItemGroup>
   <ItemGroup>

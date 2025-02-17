@@ -1,5 +1,6 @@
 #include "Object.h"
 #include <iostream>
+#include "Camera.h"
 
 TextureManager* Object::textureManager = nullptr; // 初期化もここで行う
 
@@ -49,20 +50,21 @@ void Object::Init(const wchar_t* imgname, int splitx, int splity) {
 		ConstBuffer cb;
 
 		//プロジェクション変換行列を作成
-		cb.matrixProj = DirectX::XMMatrixOrthographicLH(SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 3.0f);
+		cb.matrixProj = DirectX::XMMatrixOrthographicLH(SCREEN_WIDTH / g_Camera.Camera_Pos.z, SCREEN_HEIGHT / g_Camera.Camera_Pos.z, 0.0f, 3.0f);
 		cb.matrixProj - DirectX::XMMatrixTranspose(cb.matrixProj);
 
 		//ワールド変換行列の作成
 		//→オブジェクトの位置・大きさ・向きを指定
 		cb.matrixWorld = DirectX::XMMatrixScaling(size.x, size.y, size.z);
 		cb.matrixWorld *= DirectX::XMMatrixRotationZ(angle * 3.14f / 180);
-		cb.matrixWorld *= DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
+		cb.matrixWorld *= DirectX::XMMatrixTranslation(pos.x - g_Camera.Camera_Pos.x, pos.y - g_Camera.Camera_Pos.y, pos.z);
 		cb.matrixWorld = DirectX::XMMatrixTranspose(cb.matrixWorld);
 
 		//UVアニメーションの行列作成
-		float u = (float)numU / splitX;
-		float v = (float)numV / splitY;
-		cb.matrixTex = DirectX::XMMatrixTranslation(u, v, 0.0f);
+		float flipU = (direction == 1) ? -1.0f : 1.0f;  // 右向きならU軸を反転
+		float offsetU = (direction == 1) ? 1.0f : 0.0f;  // 反転時に右側から開始するためにオフセットを適用
+		cb.matrixTex = DirectX::XMMatrixScaling(flipU, 1.0f, 1.0f);
+		cb.matrixTex *= DirectX::XMMatrixTranslation((offsetU + (float)numU) / splitX, (float)numV / splitY, 0.0f);
 		cb.matrixTex = DirectX::XMMatrixTranspose(cb.matrixTex);
 
 		//頂点カラーのデータを作成

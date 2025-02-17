@@ -10,6 +10,7 @@ protected:
 	float radius = 25.0f;
 	Vec3 velocity = { 0.0f,0.0f,0.0f };
 	bool OnGround = false;
+	int HitState = 0;
 public:
 	float GetRadius() { return radius; };
 	Vec3 GetVelocity() { return velocity; };
@@ -19,5 +20,6 @@ public:
 
 	void SetVelocity(Vec3 _velocity) { velocity = _velocity; };
 	void SetOnGround(bool is) { OnGround = is; };
+	void SetHitState(int state) { HitState = state; };
 };
 

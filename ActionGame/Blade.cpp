@@ -4,6 +4,15 @@
 
 void Blade::Update(std::vector<Entity*>& entities, std::vector<std::unique_ptr<MapObject>>& blocks, std::vector<std::unique_ptr<BlockFragment>>& fragmentList) {
     input.Update();
+
+    // 武器振り動作
+    Swing(entities);
+
+    // 武器と破壊可能ブロックの判定と処理
+    HitBlocks(blocks, fragmentList);
+}
+
+void Blade::Swing(std::vector<Entity*>& entities) {
     for (auto& obj : entities) {
         Player* player = dynamic_cast<Player*>(obj);
         if (input.GetKeyTrigger(VK_SHIFT) && !isAttack) {
@@ -12,10 +21,10 @@ void Blade::Update(std::vector<Entity*>& entities, std::vector<std::unique_ptr<M
 
             // プレイヤーの向きに応じた開始角度を設定
             if (player->GetDirection()) {
-                swingDirection = -1;   // 右向きなら時計回り
+                swingDirection = -1;   // 右向きなら反時計回り
             }
             else {
-                swingDirection = 1;  // 左向きなら反時計回り
+                swingDirection = 1;  // 左向きなら時計回り
             }
         }
 
@@ -39,7 +48,9 @@ void Blade::Update(std::vector<Entity*>& entities, std::vector<std::unique_ptr<M
         pos.x = player->GetPos().x + radius * sin(radian);
         pos.y = player->GetPos().y - radius * cos(radian);
     }
+}
 
+void Blade::HitBlocks(std::vector<std::unique_ptr<MapObject>>& blocks, std::vector<std::unique_ptr<BlockFragment>>& fragmentList) {
     // ブロックの判定処理
     for (auto it = blocks.begin(); it != blocks.end();) {
         Block* blo = dynamic_cast<Block*>(it->get());
@@ -55,5 +66,3 @@ void Blade::Update(std::vector<Entity*>& entities, std::vector<std::unique_ptr<M
         ++it;
     }
 }
-
-

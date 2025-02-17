@@ -61,7 +61,7 @@ void Block::Update(const std::vector<Entity*>& entities) {
 
 void Block::Destroy(std::vector<std::unique_ptr<BlockFragment>>& fragmentList) {
 	// 破片の数
-	const int numFragments = 50;
+	const int numFragments = 30;
 
 	// ブロックの位置
 	DirectX::XMFLOAT3 blockPos = this->pos;
