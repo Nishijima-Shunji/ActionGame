@@ -1,9 +1,10 @@
 #include "BlockFragment.h"
+#include "Game.h"
 
 BlockFragment::BlockFragment(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 vel) : velocity(vel), lifetime(3.0f) {
 	this->pos = pos;
-	Init(L"asset/Block.png");
-	this->SetShaders(g_pDevice, "VertexSheder.hlsl", "PixelShader.hlsl");
+	Init(L"asset/Block.png", vertexShader1,pixelShader1);
+	//this->SetShaders(g_pDevice, "VertexSheder.hlsl", "PixelShader.hlsl");
 	size.x = 10.0f;
 	size.y = 10.0f;
 	size.z = 0.0f;

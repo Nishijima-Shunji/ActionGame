@@ -9,13 +9,15 @@
 class Player : public Entity {
 private:
 	int movementType = 0;	// 移動方法　0:すぐに止まる　1:滑る
-	float moveSpeed = 1.0f;	// 移動速度
+	float moveSpeed = 1.5f;	// 移動速度
 	float jumpSpeed = 20.0f;// ジャンプ力
 	int health;				// HP
 	float radius = 10.0f;   // 当たり判定の半径
 	bool deadFlg = false;	// 死亡しているかどうか
 	bool JumpFlg = false;
-	bool direction = false;
+	bool direction = false;	// 向いている方向
+	bool prevOnFlg = false;
+	int CoyoteCount = 0;
 
 public:
 	Player(int maxhp);  // コンストラクタ

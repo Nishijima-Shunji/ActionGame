@@ -20,26 +20,28 @@ GameScene::GameScene(int maxhp) {
 
 	// プレイヤーの生成
 	player = new Player(maxhp);
-	player->SetShaders(g_pDevice,"VertexShader.hlsl", "PixelShader.hlsl");
-	player->Init(L"asset/Player.png");
+	player->Init(L"asset/Player.png", vertexShader1, pixelShader1);
 	player->SetPos(0.0f, 50.0f, 0.0f);
 	player->SetSize(50.0f, 50.0f, 0.0f);
 	player->SetWidth(30.0f);
 	player->SetHeight(50.0f);
 
 	blade = new Blade;
-	blade->SetShaders(g_pDevice, "VertexShader.hlsl", "PixelShader.hlsl");
-	blade->Init(L"asset/Block.png");
+	blade->Init(L"asset/Block.png", vertexShader1, pixelShader1);
 	blade->SetPos(player->GetPos().x, player->GetPos().y, 0.0f);
 	blade->SetSize(30.0f, 200.0f, 0.0f);
 	blade->SetWidth(30.0f);
 	blade->SetHeight(200.0f);
 
+	wave = new Wave;
+	wave->Init(L"asset/Block.png", vertexShader2, pixelShader1);
+	wave->SetPos(0.0f, -300.0f, 0.0f);
+	wave->SetSize(300.0f, 100.0f, 0.0f);
+
 	// ブロックの生成
 	for (int i = 0; i < 1; i++) {
 		auto block = std::make_unique<Block>();
-		block->SetShaders(g_pDevice, "VertexShader.hlsl", "PixelShader.hlsl");
-		block->Init(L"asset/Block.png");
+		block->Init(L"asset/Block.png", vertexShader1, pixelShader1);
 		block->SetPos((i * 30.0f) - 500.0f, -200.0f, 0.0f);
 		block->SetSize(30.0f, 30.0f, 0.0f);
 
@@ -49,8 +51,7 @@ GameScene::GameScene(int maxhp) {
 
 	for (int i = 0; i < 40; i++) {
 		auto floorBlock = std::make_unique<Floor>();
-		floorBlock->SetShaders(g_pDevice, "VertexShader.hlsl", "PixelShader.hlsl");
-		floorBlock->Init(L"asset/Block.png");
+		floorBlock->Init(L"asset/Block.png", vertexShader1, pixelShader1);
 		floorBlock->SetPos((i * 30.0f) - 500.0f, -350.0f, 0.0f);
 		floorBlock->SetSize(30.0f, 30.0f, 0.0f);
 
@@ -89,11 +90,11 @@ void GameScene::Update() {
 	blade->Update(entities, blocks, fragmentList);
 
 	// ====================ブロックの更新====================
-	if (elapsed.count() > 500) {
+	if (elapsed.count() % 500 > 500) {
 		DirectX::XMFLOAT3 playerPos = player->GetPos();
 		SpawnBlock(playerPos.x, playerPos.y);
 		// タイマーをリセット
-		start = now;
+		//start = now;
 	}
 
 	// ====================破片の更新====================
@@ -109,6 +110,11 @@ void GameScene::Update() {
 			++it;
 		}
 	}
+
+	// ====================波の更新====================
+	wave->Update(elapsed.count() * 0.001);
+
+	// カメラ補正
 	g_Camera.Update();
 	DirectX::SimpleMath::Vector3 playerPos = player->GetPos();
 	g_Camera.MoveCamera(playerPos.x, playerPos.y, 1.0f, 30);
@@ -127,42 +133,7 @@ void GameScene::Draw() {
 	}
 	player->Draw();
 	blade->Draw();
-}
-
-void GameScene::SpawnEnemy(int type) {
-	// 敵の生成
-	enemies.emplace_back(std::make_unique<Enemy>(type));
-	// 敵の初期化
-	AddEnemy(L"asset/enemy", type);
-	// 指定の座標に生成
-	enemies.back()->SetSize(enemies.back()->GetRadius() * 2, enemies.back()->GetRadius() * 2, 0.0f);
-}
-
-void GameScene::AddEnemy(const std::wstring& baseTexturePath, int enemyType) {
-	// テクスチャパスを生成
-	std::wstringstream texturePath;
-	texturePath << baseTexturePath << enemyType << L".png";
-
-	enemies.back()->Init(texturePath.str().c_str());
-}
-
-void GameScene::RemoveEnemy(Enemy* enemy) {
-	if (!enemy) {
-		return;
-	}
-	// 対象の敵を探して削除
-	enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
-		[enemy](const std::unique_ptr<Enemy>& e) {
-			return e.get() == enemy;
-		}),
-		enemies.end());
-}
-
-void GameScene::TakeDamege() {
-	// 体力減らす
-	health.erase(health.end() - 1);
-	// 背景真っ赤に（ダメージエフェクト）
-	bg->SetColor(1.0f, 0.0f, 0.0f, 0.7f);
+	wave->Draw();
 }
 
 void GameScene::SpawnBlock(float playerX, float playerY) {
@@ -183,7 +154,7 @@ void GameScene::SpawnBlock(float playerX, float playerY) {
 	float randomY = yMin + (std::rand() % (yRange + 1)) * 100.0f;
 
 	auto block = std::make_unique<Block>();
-	block->Init(L"asset/Block.png");
+	block->Init(L"asset/Block.png",vertexShader1,pixelShader1);
 	block->SetPos(randomX, randomY, 0.0f);
 	block->SetSize(blockSize, blockSize, 0.0f);
 

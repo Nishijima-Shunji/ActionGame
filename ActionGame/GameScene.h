@@ -10,6 +10,7 @@
 #include "Floor.h"
 #include "Block.h"
 #include "BlockFragment.h"
+#include "wave.h"
 
 #define MAP_WIDTH (560)	// ウインドウの幅
 #define MAP_HEIGHT (720)	// ウインドウの高さ
@@ -26,6 +27,7 @@ private:
 
     Player* player;         // プレイヤー
     Blade* blade;
+    Wave* wave;
     Object* bg;             // 背景
     Object* score_bg;       // スコア
     std::vector<std::unique_ptr<Object>> scoreNum;
@@ -41,14 +43,15 @@ private:
     int enemyType = 0;
 
     std::vector<Entity*> entities;
-    std::vector<std::unique_ptr<MapObject>> blocks;
-    std::vector<MapObject*> blockPtrs;
 
     //ブロック関係
+    std::vector<std::unique_ptr<MapObject>> blocks;
+    std::vector<MapObject*> blockPtrs;
     std::vector<std::unique_ptr<BlockFragment>> fragmentList;
     std::vector<BlockFragment*> fragmentPtrs;
 
 public:
+
     GameScene(int maxhp);
     ~GameScene();
 

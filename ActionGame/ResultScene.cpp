@@ -7,7 +7,7 @@ ResultScene::ResultScene(int score) : score(score) {
 	TextureManager* textureManager = new TextureManager(g_pDevice);
 
 	result_bg = new Object;
-	result_bg->Init(L"asset/Result.png");
+	result_bg->Init(L"asset/Result.png",vertexShader1, pixelShader1);
 	result_bg->SetPos(0.0f, 0.0f, 0.0f);			//ˆÊ’u
 	result_bg->SetSize(800.0f, 600.0f, 0.0f);		//‘å‚«‚³
 	result_bg->SetColor(0.8f, 0.8f, 0.8f, 1.0f);
@@ -15,7 +15,7 @@ ResultScene::ResultScene(int score) : score(score) {
 	for (int i = 0; i < 5; i++) {
 		// UI‚Ì¶¬
 		scoreNum.emplace_back(std::make_unique<Object>());
-		scoreNum.back()->Init(L"asset/num.png", 10, 1);
+		scoreNum.back()->Init(L"asset/num.png",vertexShader1,pixelShader1, 10, 1);
 		scoreNum.back()->SetPos((i * 60.0f) - 125.0f, 0.0f, 0.0f);
 		scoreNum.back()->SetSize(60.0f, 60.0f, 0.0f);
 		scoreNum.back()->SetUV(0, 0);

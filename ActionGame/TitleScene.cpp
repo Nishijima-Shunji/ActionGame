@@ -9,7 +9,7 @@ TitleScene::TitleScene() {
 	//sound.Play(SOUND_LABEL_BGM000);	//BGMを再生
 
 	title_bg = new Object;  // オブジェクト生成
-	title_bg->Init(L"asset/title.png");
+	title_bg->Init(L"asset/title.png",vertexShader1,pixelShader1);
 	title_bg->SetPos(0.0f, 50.0f, 0.0f);	//位置を設定
 	title_bg->SetSize(800.0f, 800.0f, 0.0f);	//大きさを設定
 

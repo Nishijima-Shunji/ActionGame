@@ -17,6 +17,8 @@ HRESULT CreateVertexShader(ID3D11Device* device, const char* szFileName, LPCSTR 
 	D3D11_INPUT_ELEMENT_DESC* layout, unsigned int numElements, ID3D11VertexShader** ppVertexShader, ID3D11InputLayout** ppVertexLayout);
 // ピクセルシェーダーオブジェクトを生成
 HRESULT CreatePixelShader(ID3D11Device* device, const char* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3D11PixelShader** ppPixelShader);
+// シェーダーを読み込む
+HRESULT LoadShader(const wchar_t* vertexShaderFile, const wchar_t* pixelShaderFile, ID3D11VertexShader** ppVertexShader, ID3D11PixelShader** ppPixelShader);
 
 // 構造体の定義
 // 頂点データを表す構造体
@@ -42,6 +44,12 @@ struct ConstBuffer {
 	DirectX::XMMATRIX matrixProj;
 	//ワールド変換行列
 	DirectX::XMMATRIX matrixWorld;
+	// 時間
+	float time;
+	// 波の振幅
+	float waveAmplitude;
+	// 波の周波数
+	float waveFrequency;
 };
 
 // ※ID3D11で始まるポインタ型の変数は、解放する必要がある

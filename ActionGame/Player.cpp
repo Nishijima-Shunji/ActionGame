@@ -41,9 +41,10 @@ void Player::move(Input input, float deltaTime) {
 		pos = { 0.0f, -300.0f, 0.0f };
 	}
 
-	if (input.GetKeyTrigger(VK_SPACE) && OnGround) {
+	if (input.GetKeyTrigger(VK_SPACE) && prevOnFlg) {
 		velocity.y += jumpSpeed;
 		OnGround = false;
+		prevOnFlg = false;
 	}
 	if (OnGround) {
 		velocity.y = 0.0f;
@@ -69,12 +70,25 @@ void Player::move(Input input, float deltaTime) {
 }
 
 void Player::CheckHitBlock(const std::vector<MapObject*>& blocks) {
-	SetOnGround(false); // 毎フレーム初めにリセット
-
+	// 前フレームの接地状態を保存
+	if (!prevOnFlg) {
+		prevOnFlg = OnGround;
+	}
+	// 毎フレーム初めにリセット
+	//SetOnGround(false);
+	OnGround = false;
 	for (MapObject* block : blocks) {
 		if (block->CheckCollision(this)) {
 			block->ResolveCollision(this);
-			SetOnGround(true); // 1つでも接触していればtrueにする
+			OnGround = true; // 1つでも接触していればtrueにする
 		}
+	}
+	// 着地していなくてコヨーテタイム内なら
+	if (!OnGround && prevOnFlg) {
+		CoyoteCount++;
+	}
+	else if (prevOnFlg && CoyoteCount > 30) {
+		CoyoteCount = 0;
+		prevOnFlg = false;
 	}
 }

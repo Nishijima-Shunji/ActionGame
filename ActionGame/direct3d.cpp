@@ -8,6 +8,7 @@
 #include <io.h>
 #include <stdio.h>
 #include <string.h>
+#include <string>
 
 
 //プロトタイプ宣言
@@ -175,9 +176,11 @@ HRESULT D3D_Create(HWND hwnd)
 	//定数バッファ作成
 	D3D11_BUFFER_DESC cbDesc;
 	cbDesc.ByteWidth = sizeof(ConstBuffer);
-	cbDesc.Usage = D3D11_USAGE_DEFAULT;
+	//cbDesc.Usage = D3D11_USAGE_DEFAULT;
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
 	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cbDesc.CPUAccessFlags = 0;
+	//cbDesc.CPUAccessFlags = 0;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	cbDesc.MiscFlags = 0;
 	cbDesc.StructureByteStride = 0;
 	hr = g_pDevice->CreateBuffer(&cbDesc, NULL, &g_pConstantBuffer);
@@ -274,6 +277,77 @@ void D3D_Release()
 }
 
 //--------------------------------------------------------------------------------------
+// 頂点シェーダーオブジェクトを生成する
+//--------------------------------------------------------------------------------------
+// 頂点シェーダーオブジェクトを生成、同時に頂点レイアウトも生成
+HRESULT CreateVertexShader(ID3D11Device* device, const char* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel,
+	D3D11_INPUT_ELEMENT_DESC* layout, unsigned int numElements, ID3D11VertexShader** ppVertexShader, ID3D11InputLayout** ppVertexLayout)
+{
+	HRESULT hr = S_OK;
+
+	// シェーダーのバイトコードを格納するためのバッファ
+	ID3DBlob* pShaderBlob = nullptr;
+	ID3DBlob* pErrorBlob = nullptr;
+
+	// HLSLシェーダーコードのコンパイル
+	std::wstring wFileName = std::wstring(szFileName, szFileName + strlen(szFileName));
+	hr = D3DCompileFromFile(wFileName.c_str(), nullptr, nullptr, szEntryPoint, szShaderModel, 0, 0, &pShaderBlob, &pErrorBlob);
+
+	if (FAILED(hr))
+	{
+		if (pErrorBlob)
+		{
+			OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
+			pErrorBlob->Release();
+		}
+		return hr;
+	}
+
+	// 頂点シェーダーの作成
+	hr = device->CreateVertexShader(pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, ppVertexShader);
+	if (FAILED(hr))
+	{
+		pShaderBlob->Release();
+		return hr;
+	}
+
+	// 入力レイアウトの作成
+	hr = device->CreateInputLayout(layout, numElements, pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), ppVertexLayout);
+	pShaderBlob->Release(); // バッファを解放
+
+	return hr;
+}
+
+// ピクセルシェーダーオブジェクトを生成
+HRESULT CreatePixelShader(ID3D11Device* device, const char* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3D11PixelShader** ppPixelShader)
+{
+	HRESULT hr = S_OK;
+
+	// シェーダーのバイトコードを格納するためのバッファ
+	ID3DBlob* pShaderBlob = nullptr;
+	ID3DBlob* pErrorBlob = nullptr;
+
+	// HLSLシェーダーコードのコンパイル
+	std::wstring wFileName = std::wstring(szFileName, szFileName + strlen(szFileName));
+	hr = D3DCompileFromFile(wFileName.c_str(), nullptr, nullptr, szEntryPoint, szShaderModel, 0, 0, &pShaderBlob, &pErrorBlob);
+
+	if (FAILED(hr))
+	{
+		if (pErrorBlob)
+		{
+			OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
+			pErrorBlob->Release();
+		}
+		return hr;
+	}
+
+	// ピクセルシェーダーの作成
+	hr = device->CreatePixelShader(pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, ppPixelShader);
+	pShaderBlob->Release(); // バッファを解放
+
+	return hr;
+}
+//--------------------------------------------------------------------------------------
 // シェーダーをファイル拡張子に合わせてコンパイル
 //--------------------------------------------------------------------------------------
 HRESULT CompileShader(const char* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, void** ShaderObject, size_t& ShaderObjectSize, ID3DBlob** ppBlobOut)
@@ -345,70 +419,67 @@ HRESULT CompileShader(const char* szFileName, LPCSTR szEntryPoint, LPCSTR szShad
 	return S_OK;
 }
 
-//--------------------------------------------------------------------------------------
-// 頂点シェーダーオブジェクトを生成する
-//--------------------------------------------------------------------------------------
-// 頂点シェーダーオブジェクトを生成、同時に頂点レイアウトも生成
-HRESULT CreateVertexShader(ID3D11Device* device, const char* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel,
-	D3D11_INPUT_ELEMENT_DESC* layout, unsigned int numElements, ID3D11VertexShader** ppVertexShader, ID3D11InputLayout** ppVertexLayout)
-{
-	HRESULT hr = S_OK;
-
-	// シェーダーのバイトコードを格納するためのバッファ
+HRESULT LoadShader(const wchar_t* vertexShaderFile, const wchar_t* pixelShaderFile,
+	ID3D11VertexShader** ppVertexShader, ID3D11PixelShader** ppPixelShader) {
+	// コンパイル後のシェーダーバイトコード格納用の変数
 	ID3DBlob* pShaderBlob = nullptr;
 	ID3DBlob* pErrorBlob = nullptr;
 
-	// HLSLシェーダーコードのコンパイル
-	hr = D3DCompileFromFile(LPCWSTR(szFileName), nullptr, nullptr, szEntryPoint, szShaderModel, 0, 0, &pShaderBlob, &pErrorBlob);
-	if (FAILED(hr))
-	{
-		if (pErrorBlob)
-		{
+	// 頂点シェーダーのコンパイル
+	HRESULT hr = D3DCompileFromFile(vertexShaderFile, nullptr, nullptr, "vs_main", "vs_5_0", 0, 0, &pShaderBlob, &pErrorBlob);
+	if (FAILED(hr)) {
+		if (pErrorBlob) {
 			OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
 			pErrorBlob->Release();
 		}
-		return hr;
+		return hr;  // エラーがあれば終了
 	}
 
 	// 頂点シェーダーの作成
-	hr = device->CreateVertexShader(pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, ppVertexShader);
-	if (FAILED(hr))
-	{
+	hr = g_pDevice->CreateVertexShader(pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, ppVertexShader);
+	if (FAILED(hr)) {
 		pShaderBlob->Release();
 		return hr;
 	}
 
-	// 入力レイアウトの作成
-	hr = device->CreateInputLayout(layout, numElements, pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), ppVertexLayout);
-	pShaderBlob->Release(); // バッファを解放
-
-	return hr;
-}
-
-// ピクセルシェーダーオブジェクトを生成
-HRESULT CreatePixelShader(ID3D11Device* device, const char* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3D11PixelShader** ppPixelShader)
-{
-	HRESULT hr = S_OK;
-
-	// シェーダーのバイトコードを格納するためのバッファ
-	ID3DBlob* pShaderBlob = nullptr;
-	ID3DBlob* pErrorBlob = nullptr;
-
-	// HLSLシェーダーコードのコンパイル
-	hr = D3DCompileFromFile(LPCWSTR(szFileName), nullptr, nullptr, szEntryPoint, szShaderModel, 0, 0, &pShaderBlob, &pErrorBlob);
-	if (FAILED(hr))
-	{
-		if (pErrorBlob)
-		{
+	// ピクセルシェーダーのコンパイル
+	hr = D3DCompileFromFile(pixelShaderFile, nullptr, nullptr, "ps_main", "ps_5_0", 0, 0, &pShaderBlob, &pErrorBlob);
+	if (FAILED(hr)) {
+		if (pErrorBlob) {
 			OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
 			pErrorBlob->Release();
 		}
-		return hr;
+		return hr;  // エラーがあれば終了
 	}
 
 	// ピクセルシェーダーの作成
-	hr = device->CreatePixelShader(pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, ppPixelShader);
-	pShaderBlob->Release(); // バッファを解放
+	hr = g_pDevice->CreatePixelShader(pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, ppPixelShader);
+	if (FAILED(hr)) {
+		pShaderBlob->Release();
+		return hr;
+	}
 
-	return hr;
+	// 使用後は必ずリソースを解放
+	pShaderBlob->Release();
+
+	return S_OK;
+}
+
+// 定数バッファの作成関数
+bool CreateConstantBuffer() {
+	// 定数バッファの説明構造体を設定
+	D3D11_BUFFER_DESC bufferDesc = {};
+	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufferDesc.ByteWidth = sizeof(ConstBuffer);
+	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+	// 定数バッファを作成
+	HRESULT hr = g_pDevice->CreateBuffer(&bufferDesc, nullptr, &g_pConstantBuffer);
+	if (FAILED(hr)) {
+		OutputDebugString(L"Failed to create constant buffer\n");
+		return false;
+	}
+
+	return true;
 }
