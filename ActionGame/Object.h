@@ -29,6 +29,7 @@ protected:
 	//ç¿ïW
 	DirectX::SimpleMath::Vector3 pos = { 0.0f, 0.0f, 0.0f };
 	DirectX::SimpleMath::Vector3 size = { 100.0f, 100.0f, 0.0f };
+	DirectX::SimpleMath::Color col;
 	DirectX::XMFLOAT4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	float angle = 0.0f;
 	DirectX::XMFLOAT3 gravity{ 0.0f, -9.8f * 7.0f, 0.0f };
