@@ -90,11 +90,13 @@ void GameScene::Update() {
 	blade->Update(entities, blocks, fragmentList);
 
 	// ====================ブロックの更新====================
-	if (elapsed.count() % 500 > 500) {
+	if (elapsed.count() > 500) {
 		DirectX::XMFLOAT3 playerPos = player->GetPos();
-		SpawnBlock(playerPos.x, playerPos.y);
+		if (playerPos.y > -300.0f) {
+			SpawnBlock(playerPos.x, playerPos.y);
+		}
 		// タイマーをリセット
-		//start = now;
+		start = now;
 	}
 
 	// ====================破片の更新====================
@@ -154,11 +156,11 @@ void GameScene::SpawnBlock(float playerX, float playerY) {
 	float randomY = yMin + (std::rand() % (yRange + 1)) * 100.0f;
 
 	auto block = std::make_unique<Block>();
-	block->Init(L"asset/Block.png",vertexShader1,pixelShader1);
+	block->Init(L"asset/Block.png", vertexShader1, pixelShader1);
 	block->SetPos(randomX, randomY, 0.0f);
 	block->SetSize(blockSize, blockSize, 0.0f);
 
-	blockPtrs.push_back(block.get());  // MapObject* のリストに追加
+	blockPtrs.push_back(block.get());		// MapObject* のリストに追加
 	blocks.emplace_back(std::move(block));  // unique_ptr をリストに追加
 }
 

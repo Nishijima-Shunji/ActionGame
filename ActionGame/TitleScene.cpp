@@ -22,6 +22,9 @@ TitleScene::~TitleScene() {
 //シーンのアップデート
 void TitleScene::Update() {
 	input.Update();	//キー入力の判定
+	if (input.GetKeyTrigger(VK_RETURN)) {
+		SceneManager::ChangeScene(SceneManager::GAME);
+	}
 }
 
 //各シーンの描画

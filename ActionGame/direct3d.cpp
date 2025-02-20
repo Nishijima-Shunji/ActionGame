@@ -39,6 +39,7 @@ ID3D11PixelShader* g_pPixelShader;
 ID3D11SamplerState* g_pSampler;
 //定数バッファ用定数
 ID3D11Buffer* g_pConstantBuffer;
+ID3D11Buffer* g_pWaveConstantBuffer;
 //ブレンドステート用変数(アルファブレンディング)
 ID3D11BlendState* g_pBlendState;
 
@@ -184,6 +185,18 @@ HRESULT D3D_Create(HWND hwnd)
 	cbDesc.MiscFlags = 0;
 	cbDesc.StructureByteStride = 0;
 	hr = g_pDevice->CreateBuffer(&cbDesc, NULL, &g_pConstantBuffer);
+	if (FAILED(hr)) return hr;
+
+	//波用の定数バッファ作成
+	ZeroMemory(&cbDesc, sizeof(cbDesc)); // ここで初期化
+	cbDesc.ByteWidth = sizeof(WaveConstBuffer);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	hr = g_pDevice->CreateBuffer(&cbDesc, NULL, &g_pWaveConstantBuffer);
 	if (FAILED(hr)) return hr;
 
 	//ブレンドステートを作成→透過処理や加算合成を可能にする色の合成方法

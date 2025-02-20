@@ -1,50 +1,46 @@
 #include "Wave.h"
 
 void Wave::Update(float timeCount) {
-	SetConstWaveVal(g_pDeviceContext, timeCount, WaveAmp, WaveFrequency);
+    time = timeCount;
+	//SetConstWaveVal(g_pDeviceContext, timeCount, WaveAmp, WaveFrequency);
 }
 
 void Wave::SetConstWaveVal(ID3D11DeviceContext* context, float newTime, float newWaveAmplitude, float newWaveFrequency) {
-//    ConstBuffer data = {};
-
-    // 定数バッファが正しく作成されていることを確認
-    if (!g_pConstantBuffer) {
-        OutputDebugString(L"Constant buffer is not created.\n");
+    if (!g_pWaveConstantBuffer) {
+        OutputDebugString(L"Wave constant buffer is not created.\n");
         return;
     }
-
-    // 定数バッファを更新
-    D3D11_MAPPED_SUBRESOURCE mappedResource;
-    HRESULT hr = context->Map(g_pConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-    if (FAILED(hr)) {
-        OutputDebugString(L"Failed to map constant buffer\n");
-        return;
+    if (m_pVertexShader && m_pPixelShader) {
+        g_pDeviceContext->VSSetShader(m_pVertexShader, nullptr, 0);
+        g_pDeviceContext->PSSetShader(m_pPixelShader, nullptr, 0);
     }
-    // **現在の定数バッファのデータを取得**
-    ConstBuffer* pData = reinterpret_cast<ConstBuffer*>(mappedResource.pData);
-    ConstBuffer cb = *pData;  // 既存データをコピー
 
-    cb.time = newTime;
-    cb.waveAmplitude = newWaveAmplitude;
-    cb.waveFrequency = newWaveFrequency;
+    // WaveBuffer 用のデータを更新
+    struct WaveBufferData {
+        float time;
+        float waveAmplitude;
+        float waveFrequency;
+        float padding;  // HLSL の 16-byte alignment を満たすためのダミー
+    } waveData;
 
-    // データをコピー
-    *pData = cb;
+    waveData.time = newTime;
+    waveData.waveAmplitude = newWaveAmplitude;
+    waveData.waveFrequency = newWaveFrequency;
+    waveData.padding = 0.0f;
 
-    // マッピング解除
-    context->Unmap(g_pConstantBuffer, 0);
-    // 定数バッファをシェーダーに設定
-    context->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
-    context->PSSetConstantBuffers(0, 1, &g_pConstantBuffer);
+    context->UpdateSubresource(g_pWaveConstantBuffer, 0, nullptr, &waveData, 0, 0);
 
-    hr = context->Map(g_pConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-    if (FAILED(hr)) {
-        OutputDebugString(L"Failed to map constant buffer\n");
-        return;
-    }
-    // **現在の定数バッファのデータを取得**
-    pData = reinterpret_cast<ConstBuffer*>(mappedResource.pData);
-    cb = *pData;  // 既存データをコピー
-    context->Unmap(g_pConstantBuffer, 0);
+    //D3D11_MAPPED_SUBRESOURCE mappedResource;
+    //HRESULT hr = g_pDeviceContext->Map(g_pWaveConstantBuffer, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &mappedResource);
+    //if (FAILED(hr)) {
+    //    return; // マッピング失敗時のエラーハンドリング
+    //}
+    //WaveConstBuffer* pData = reinterpret_cast<WaveConstBuffer*>(mappedResource.pData);
+    //WaveConstBuffer cb = *pData;  // 既存データをコピー
+    //g_pDeviceContext->Unmap(g_pConstantBuffer, 0);
 
+
+
+    // スロット b1 に WaveBuffer をセット
+    context->VSSetConstantBuffers(1, 1, &g_pWaveConstantBuffer);
 }

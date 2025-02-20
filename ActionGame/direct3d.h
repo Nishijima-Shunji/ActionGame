@@ -44,12 +44,16 @@ struct ConstBuffer {
 	DirectX::XMMATRIX matrixProj;
 	//ワールド変換行列
 	DirectX::XMMATRIX matrixWorld;
+};
+struct WaveConstBuffer {
 	// 時間
 	float time;
 	// 波の振幅
 	float waveAmplitude;
 	// 波の周波数
 	float waveFrequency;
+
+	float padding;
 };
 
 // ※ID3D11で始まるポインタ型の変数は、解放する必要がある
@@ -57,6 +61,7 @@ extern ID3D11Device* g_pDevice; // デバイス＝DirectXの各種機能を作る
 // コンテキスト＝描画関連を司る機能
 extern ID3D11DeviceContext* g_pDeviceContext;
 extern ID3D11Buffer* g_pConstantBuffer;
+extern ID3D11Buffer* g_pWaveConstantBuffer;
 
 // Direct3D解放の簡略化マクロ
 #define SAFE_RELEASE(p) { if( NULL != p ) { p->Release(); p = NULL; } }

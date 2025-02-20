@@ -149,9 +149,27 @@ void Object::Draw() {
 	// マッピング解除
 	g_pDeviceContext->Unmap(g_pConstantBuffer, 0);
 
+
 	// 定数バッファをシェーダーに設定
 	g_pDeviceContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
 	g_pDeviceContext->PSSetConstantBuffers(0, 1, &g_pConstantBuffer);
+
+
+	// WaveBuffer 用のデータを更新
+	struct WaveBufferData {
+		float time;
+		float waveAmplitude;
+		float waveFrequency;
+		float padding;  // HLSL の 16-byte alignment を満たすためのダミー
+	} waveData;
+
+	waveData.time = time;
+	waveData.waveAmplitude = 0.1f;
+	waveData.waveFrequency = 1.0f;
+	waveData.padding = 0.0f;
+
+	g_pDeviceContext->UpdateSubresource(g_pWaveConstantBuffer, 0, nullptr, &waveData, 0, 0);
+	g_pDeviceContext->VSSetConstantBuffers(1, 1, &g_pWaveConstantBuffer);
 
 	// 描画命令
 	g_pDeviceContext->Draw(4, 0);
