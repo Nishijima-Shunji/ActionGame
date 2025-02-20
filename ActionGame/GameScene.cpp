@@ -35,6 +35,7 @@ GameScene::GameScene(int maxhp) {
 
 	wave = new Wave;
 	wave->Init(L"asset/Block.png", vertexShader2, pixelShader1);
+	wave->InitWave(20,1);
 	wave->SetPos(0.0f, -300.0f, 0.0f);
 	wave->SetSize(300.0f, 100.0f, 0.0f);
 
@@ -96,7 +97,7 @@ void GameScene::Update() {
 			SpawnBlock(playerPos.x, playerPos.y);
 		}
 		// タイマーをリセット
-		start = now;
+		//start = now;
 	}
 
 	// ====================破片の更新====================

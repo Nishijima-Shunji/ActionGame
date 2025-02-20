@@ -1,15 +1,27 @@
 #pragma once
 #include "Object.h"
-class Wave : public Object
-{
+
+class Wave : public Object {
 private:
-	// îgÇÃã≠Ç≥
-	float WaveAmp = 0.1f;
-	// îgÇÃïù
-	float WaveFrequency = 1.0f;
+    std::vector<Vertex> waveVertexList;
+    ID3D11Buffer* m_pWaveVertexBuffer = nullptr;
+    int vertexCount = 10; // ï™äÑêîÅiëùÇ‚ÇµÇΩÇ¢í∏ì_êîÅj
+    float waveAmp = 0.1f;
+    float waveFrequency = 1.0f;
+    float time = 0.0f;
+
 public:
-	void Update(float);
-	void SetConstWaveVal(ID3D11DeviceContext* context, float newTime, float newWaveAmplitude, float newWaveFrequency);
+    virtual ~Wave() {
+        if (m_pWaveVertexBuffer) {
+            m_pWaveVertexBuffer->Release();
+            m_pWaveVertexBuffer = nullptr;
+        }
+    }
+    void Update(float);
+    void Draw();
+    void InitWave(int divX, int divY);
+
 };
+
 
 	

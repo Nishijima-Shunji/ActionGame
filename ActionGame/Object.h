@@ -38,8 +38,6 @@ protected:
 
 	int direction = 0;
 
-	float time;
-
 	// 頂点バッファ
 	ID3D11Buffer* m_pVertexBuffer = nullptr;
 	ID3D11ShaderResourceView* m_pTextureView = nullptr;

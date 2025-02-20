@@ -190,9 +190,9 @@ HRESULT D3D_Create(HWND hwnd)
 	//波用の定数バッファ作成
 	ZeroMemory(&cbDesc, sizeof(cbDesc)); // ここで初期化
 	cbDesc.ByteWidth = sizeof(WaveConstBuffer);
-	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.Usage = D3D11_USAGE_DEFAULT;
 	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.CPUAccessFlags = 0;
 	cbDesc.MiscFlags = 0;
 	cbDesc.StructureByteStride = 0;
 
