@@ -8,11 +8,10 @@ typedef enum
 	SOUND_LABEL_BGM000 = 0,		// サンプルBGM
 	SOUND_LABEL_BGM001,		// サンプルBGM
 	SOUND_LABEL_SE001,			// サンプルSE
-	SOUND_LABEL_SE002,			// サンプルSE
-	SOUND_LABEL_SEthrow,			// サンプルSE
-	SOUND_LABEL_SEhit1,			// サンプルSE
-	SOUND_LABEL_SEhit2,			// サンプルSE
-	SOUND_LABEL_SEhit3,			// サンプルSE
+	SOUND_LABEL_SEswing1,			// サンプルSE
+	SOUND_LABEL_SEswing2,			// サンプルSE
+	SOUND_LABEL_SEbreak1,			// サンプルSE
+	SOUND_LABEL_SEbreak2,			// サンプルSE
 
 
 
@@ -30,14 +29,13 @@ private:
 
 	PARAM m_param[SOUND_LABEL_MAX] =
 	{
-		{"asset/BGM/y014.wav", true},	// サンプルBGM（ループさせるのでtrue設定）
-		{"asset/BGM/w001.wav", true},
+		{"asset/BGM/title.wav", true},	// サンプルBGM（ループさせるのでtrue設定）
+		{"asset/BGM/game.wav", true},
 		{"asset/SE/menu-button.wav", false},	// SE
-		{"asset/SE/falled.wav", false}, // SE
-		{"asset/SE/throw.wav", false}, // SE
-		{"asset/SE/hit1.wav", false}, // SE
-		{"asset/SE/hit2.wav", false}, // SE
-		{"asset/SE/hit3.wav", false}, // SE
+		{"asset/SE/swing1.wav", false}, // SE
+		{"asset/SE/swing2.wav", false}, // SE
+		{"asset/SE/break1.wav", false}, // SE
+		{"asset/SE/break2.wav", false}, // SE
 	};
 
 	IXAudio2* m_pXAudio2 = NULL;

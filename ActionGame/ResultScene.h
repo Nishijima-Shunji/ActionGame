@@ -1,14 +1,15 @@
 #pragma once
 #include "BaseScene.h"
 #include "sound.h"
+#include "UI.h"
 
 class Game;
 class ResultScene : public BaseScene
 {
 private:
     Sound sound;
-    Object* result_bg;
-    std::vector<std::unique_ptr<Object>> scoreNum;
+    UI* result_bg;
+    std::vector<std::unique_ptr<UI>> scoreNum;
     int score;
 
 public:

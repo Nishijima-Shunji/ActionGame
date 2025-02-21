@@ -22,7 +22,7 @@ void Player::Update(Input input, float deltatime, const std::vector<MapObject*>&
 
 void Player::move(Input input, float deltaTime) {
 	// 移動中フラグ
-	bool moveFlg = false;
+	moveFlg = false;
 	DirectX::SimpleMath::Vector3 oldPos = pos;
 
 	// キャラクター移動
@@ -31,11 +31,13 @@ void Player::move(Input input, float deltaTime) {
 		velocity.x -= moveSpeed;
 		moveFlg = true;
 		direction = false;
+		Object::direction = 1;
 	}
 	if (input.GetKeyPress(VK_D) && HitState != 1) {
 		velocity.x += moveSpeed;
 		moveFlg = true;
 		direction = true;
+		Object::direction = 0;
 	}
 	if (input.GetKeyPress(VK_R)) {
 		pos = { 0.0f, -300.0f, 0.0f };
@@ -57,16 +59,16 @@ void Player::move(Input input, float deltaTime) {
 		// 地面に接触している場合、縦方向の速度をゼロにリセット
 		velocity.y = 0.0f;
 	}
+
+	// 落下の最大速度
+	if (abs(velocity.y) > 100.0f) {
+		velocity.y = 100.0f;
+	}
 	// 座標更新
 	pos += velocity;
 
-	// 範囲外なら元に戻す（移動出来ない）
-	if (pos.x > MAP_WIDTH / 2 || pos.x < -(MAP_WIDTH / 2)) {
-		pos.x = oldPos.x;
-	}
-	else if (pos.y < -(MAP_HEIGHT / 2)) {
-		pos.y = oldPos.y;
-	}
+	Animation();
+	
 }
 
 void Player::CheckHitBlock(const std::vector<MapObject*>& blocks) {
@@ -90,5 +92,24 @@ void Player::CheckHitBlock(const std::vector<MapObject*>& blocks) {
 	else if (prevOnFlg && CoyoteCount > 30) {
 		CoyoteCount = 0;
 		prevOnFlg = false;
+	}
+}
+
+void Player::Animation() {
+	static int animCount = 0;
+	static int animTimer = 0;
+	const int animSpeed = 5; // 数値を大きくするとアニメーションが遅くなる
+
+	SetUV(animCount % 4, 1);
+	if (moveFlg && OnGround) {
+		animTimer++;
+		if (animTimer >= animSpeed) {
+			animTimer = 0;
+			animCount++;
+		}
+	}
+	else {
+		animCount = 0;
+		animTimer = 0;
 	}
 }

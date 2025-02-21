@@ -19,7 +19,9 @@ void Game::Init(HWND hWnd) {
 	LoadShader(L"Wave_V.hlsl", L"Wave_P.hlsl", &vertexShader2, &pixelShader2);
 
 	//初期シーンをタイトルにする
-	sm.ChangeScene(sm.GAME, 1);
+	//sm.ChangeScene(sm.GAME, 1);
+	//sm.ChangeScene(sm.RESULT, 1);
+	sm.ChangeScene(sm.TITLE, 1);
 
 }
 

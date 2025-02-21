@@ -102,6 +102,9 @@
     <ClCompile Include="wave.cpp">
       <Filter>Object</Filter>
     </ClCompile>
+    <ClCompile Include="UI.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameScene.h">
@@ -175,6 +178,9 @@
     </ClInclude>
     <ClInclude Include="wave.h">
       <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="UI.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

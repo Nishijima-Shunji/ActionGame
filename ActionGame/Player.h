@@ -8,8 +8,9 @@
 
 class Player : public Entity {
 private:
+	bool moveFlg = false;
 	int movementType = 0;	// 移動方法　0:すぐに止まる　1:滑る
-	float moveSpeed = 1.5f;	// 移動速度
+	float moveSpeed = 1.75f;	// 移動速度
 	float jumpSpeed = 20.0f;// ジャンプ力
 	int health;				// HP
 	float radius = 10.0f;   // 当たり判定の半径
@@ -34,5 +35,6 @@ public:
 	// 処理
 	void DecreaseHealth(int damage)						{ health -= damage; };
 	void CheckHitBlock(const std::vector<MapObject*>& blocks);
+	void Animation();
 };
 

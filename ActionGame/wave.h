@@ -7,8 +7,9 @@ private:
     ID3D11Buffer* m_pWaveVertexBuffer = nullptr;
     int vertexCount = 10; // •ªŠ„”i‘‚â‚µ‚½‚¢’¸“_”j
     float waveAmp = 0.1f;
-    float waveFrequency = 1.0f;
+    float waveFrequency = 0.0010f;
     float time = 0.0f;
+    float upSpeed = 0.7;
 
 public:
     virtual ~Wave() {
